@@ -27,11 +27,11 @@ public:
 
 	void SetShoutCooldown(RE::TESShout* shout);
 	
-	void AsyncRun(RE::TESShout* shout);
+	void AsyncSetupCatch(RE::TESShout* shout);
 	void AsyncCatch(RE::TESShout* shout);
 
-	void AsyncWalk(float recovery_time);
-	void AsyncCheck(float recovery_time);
+	void AsyncSetupRecover(float recovery_time);
+	void AsyncRecover(float recovery_time);
 
 	void LogCooldowns();
 	void LogStorage();

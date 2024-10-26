@@ -26,7 +26,6 @@ void SpellCastEventHandler::HandleShout(RE::TESObjectREFR* caster, RE::SpellItem
 	RE::Actor* player = caster->As<RE::Actor>();
 	RE::TESShout* shout = player->GetCurrentShout();
 	if (shout) {
-		ShoutRecoveryHandler::GetSingleton()->AsyncRun(shout);
-		//ShoutRecoveryHandler::GetSingleton()->AsyncWalk();
+		ShoutRecoveryHandler::GetSingleton()->AsyncSetupCatch(shout);
 	}
 }

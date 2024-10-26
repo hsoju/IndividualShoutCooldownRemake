@@ -21,23 +21,20 @@ RE::HighProcessData* ShoutRecoveryHandler::GetPlayerData() {
 void ShoutRecoveryHandler::SetShoutCooldown(RE::TESShout* shout) {
 	auto player_data = GetPlayerData();
 	if (player_data) {
-		//auto player = RE::PlayerCharacter::GetSingleton();
-		//RE::TESShout* current_shout = (shout != nullptr) ? shout : player->GetCurrentShout();
 		if (shout_cooldowns.contains(shout) && shout_times.contains(shout)) {
 			float previous_time = shout_times[shout];
 			float current_time = GetCurrentGameTimeFromCalendar();
 			float elapsed_time = current_time - previous_time;
 			float remaining_time = shout_cooldowns[shout] - elapsed_time;
 			float new_recovery_time = remaining_time < 0.0f ? 0.0f : remaining_time;
-			AsyncWalk(new_recovery_time);
+			AsyncSetupRecover(new_recovery_time);
 		} else {
-			//player_data->voiceRecoveryTime = 0.0f;
-			AsyncWalk(0.0f);
+			AsyncSetupRecover(0.0f);
 		}
 	}
 }
 
-void ShoutRecoveryHandler::AsyncRun(RE::TESShout* shout)
+void ShoutRecoveryHandler::AsyncSetupCatch(RE::TESShout* shout)
 {
 	auto ThreadFunc = [this](RE::TESShout* shout) -> void {
 		AsyncCatch(shout);
@@ -65,16 +62,16 @@ void ShoutRecoveryHandler::AsyncCatch(RE::TESShout* shout)
 	}
 }
 
-void ShoutRecoveryHandler::AsyncWalk(float recovery_time)
+void ShoutRecoveryHandler::AsyncSetupRecover(float recovery_time)
 {
 	auto ThreadFunc = [this](float recovery_time) -> void {
-		AsyncCheck(recovery_time);
+		AsyncRecover(recovery_time);
 	};
 	std::jthread thread(ThreadFunc, recovery_time);
 	thread.detach();
 }
 
-void ShoutRecoveryHandler::AsyncCheck(float recovery_time) {
+void ShoutRecoveryHandler::AsyncRecover(float recovery_time) {
 	float delay = 20.0f;
 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(delay)));
 	const auto task_interface = SKSE::GetTaskInterface();
@@ -85,8 +82,7 @@ void ShoutRecoveryHandler::AsyncCheck(float recovery_time) {
 			player->GetActorRuntimeData().currentProcess->InHighProcess()) {
 			task_interface->AddTask([this, recovery_time]() -> void {
 				GetPlayerData()->voiceRecoveryTime = recovery_time;
-				logger::info("Set: {}", recovery_time);
-				//SetShoutCooldown(nullptr);
+				//logger::info("Set: {}", recovery_time);
 			});
 		}
 	}
