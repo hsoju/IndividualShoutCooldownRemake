@@ -1,9 +1,5 @@
 #pragma once
 
-#include "InputEventHandler.h"
-#include "MenuHandler.h"
-#include "SwitchManager.h"
-
 class SpellCastEventHandler : public RE::BSTEventSink<RE::TESSpellCastEvent>
 {
 public:
