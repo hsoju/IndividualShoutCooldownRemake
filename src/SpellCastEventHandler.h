@@ -17,6 +17,9 @@ public:
 		}
 
 		RE::SpellItem* casted_spell = RE::TESForm::LookupByID<RE::SpellItem>(a_event->spell);
+		if (!casted_spell) {
+			return RE::BSEventNotifyControl::kContinue;
+		}
 		auto spell_type = casted_spell->GetSpellType();
 		if (spell_type == RE::MagicSystem::SpellType::kVoicePower) {
 			HandleShout(caster, casted_spell);
